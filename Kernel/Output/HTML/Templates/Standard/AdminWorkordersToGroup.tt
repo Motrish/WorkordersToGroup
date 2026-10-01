@@ -1,0 +1,174 @@
+[% RenderBlockStart("Overview") %]
+<div class="MainBox ARIARoleMain">
+    <h1>[% Translate("Work Orders to Group") | html %]</h1>
+    <p>[% Translate("Assign existing native ITSM Work Orders to one OTOBO group. Assignment does not create or delete a Work Order.") | html %]</p>
+
+    <div class="WidgetSimple">
+        <div class="Header"><h2>[% Translate("Assign a Work Order") | html %]</h2></div>
+        <div class="Content">
+            [% IF !Data.HasAssignableGroups %]
+                <p class="MessageNotice">[% Translate("No groups are enabled for Work Order assignment. Configure WorkordersToGroup::AssignableGroups in SysConfig.") | html %]</p>
+            [% END %]
+            <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
+                <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                <input type="hidden" name="Subaction" value="Assign"/>
+                <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                <fieldset class="TableLike">
+                    <label for="WorkOrderID">[% Translate("Work Order ID") | html %]</label>
+                    <div class="Field"><input id="WorkOrderID" name="WorkOrderID" type="text" class="W50pc Validate_Required Validate_Number"/></div>
+                    <label for="GroupID">[% Translate("Group") | html %]</label>
+                    <div class="Field">
+                        <select id="GroupID" name="GroupID" class="Modernize">
+                            <option value="">[% Translate("Select") | html %]</option>
+                            [% FOREACH Group IN Data.Groups %]
+                                <option value="[% Group.ID | html %]">[% Group.Name | html %]</option>
+                            [% END %]
+                        </select>
+                    </div>
+                </fieldset>
+                <div class="Field"><button class="PrimaryCallForAction" type="submit">[% Translate("Assign") | html %]</button></div>
+            </form>
+        </div>
+    </div>
+
+    [% IF Data.HasLegacyApplyResult %]
+        <div class="WidgetSimple">
+            <div class="Header"><h2>[% Translate("Migration progress") | html %]</h2></div>
+            <div class="Content">
+                <p>[% Translate("Created") | html %]: [% Data.LegacyApplyCounts.Created | html %] · [% Translate("Already present") | html %]: [% Data.LegacyApplyCounts.Existing | html %] · [% Translate("Failed") | html %]: [% Data.LegacyApplyCounts.Failed | html %]</p>
+                [% IF Data.HasLegacyApplyIssues %]
+                    <table class="DataTable"><thead><tr><th>[% Translate("Work Order ID") | html %]</th><th>[% Translate("Failure") | html %]</th></tr></thead><tbody>
+                        [% FOREACH Issue IN Data.LegacyApplyIssues %]
+                            <tr><td>[% Issue.WorkOrderID | html %]</td><td>[% Issue.Status | html %]</td></tr>
+                        [% END %]
+                    </tbody></table>
+                [% END %]
+            </div>
+        </div>
+    [% END %]
+
+    <div class="WidgetSimple">
+        <div class="Header"><h2>[% Translate("Legacy Change Automation migration") | html %]</h2></div>
+        <div class="Content">
+            <p>[% Translate("Preview saved group assignments from CustomChangeAutomation 0.3.x first. Conflicting or invalid rows must be resolved before applying the import.") | html %]</p>
+            <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                <input type="hidden" name="Subaction" value="PreviewLegacy"/>
+                <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                <button type="submit">[% Translate("Preview existing automation assignments") | html %]</button>
+            </form>
+            [% IF Data.HasLegacyPreview %]
+                <p>[% Translate("Rows") | html %]: [% Data.LegacyPreview.Counts.Read | html %] · [% Translate("Create") | html %]: [% Data.LegacyPreview.Counts.Create | html %] · [% Translate("Already match") | html %]: [% Data.LegacyPreview.Counts.Existing | html %] · [% Translate("Group conflicts") | html %]: [% Data.LegacyPreview.Counts.Conflict | html %] · [% Translate("Invalid") | html %]: [% Data.LegacyPreview.Counts.Invalid | html %]</p>
+                [% IF Data.HasLegacyIssues %]
+                    <table class="DataTable"><thead><tr><th>[% Translate("Instance") | html %]</th><th>[% Translate("Slot") | html %]</th><th>[% Translate("Work Order") | html %]</th><th>[% Translate("Group") | html %]</th><th>[% Translate("Result") | html %]</th></tr></thead><tbody>
+                        [% FOREACH Issue IN Data.LegacyIssues %]
+                            <tr><td>[% Issue.InstanceID | html %]</td><td>[% Issue.Slot | html %]</td><td>[% Issue.WorkOrderID | html %]</td><td>[% Issue.GroupID | html %]</td><td>[% IF Issue.Status == 'GROUP_NOT_ASSIGNABLE' %][% Translate("The selected group is not enabled for Work Order assignment.") | html %][% ELSE %][% Issue.Status | html %][% END %]</td></tr>
+                        [% END %]
+                    </tbody></table>
+                [% END %]
+                [% IF Data.CanApplyLegacy %]
+                    <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                        <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                        <input type="hidden" name="Subaction" value="ApplyLegacy"/>
+                        <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                        <button class="PrimaryCallForAction" type="submit">[% Translate("Apply migration") | html %]</button>
+                    </form>
+                [% END %]
+            [% END %]
+        </div>
+    </div>
+
+    <div class="WidgetSimple">
+        <div class="Header"><h2>[% Translate("Current assignments") | html %]</h2></div>
+        <div class="Content">
+            <table class="DataTable">
+                <thead><tr><th>[% Translate("Work Order") | html %]</th><th>[% Translate("State") | html %]</th><th>[% Translate("Group") | html %]</th><th>[% Translate("Assigned agent") | html %]</th><th>[% Translate("Change group") | html %]</th><th>[% Translate("Actions") | html %]</th></tr></thead>
+                <tbody>
+                    [% IF Data.HasAssignments %]
+                    [% FOREACH Assignment IN Data.Assignments %]
+                        <tr>
+                            <td>
+                                [% IF Assignment.HasWorkOrder %]
+                                    <a href="[% Env("Baselink") %]Action=AgentITSMWorkOrderZoom;WorkOrderID=[% Assignment.WorkOrderID | uri %]">[% Assignment.WorkOrderTitle | html %] ([% Assignment.WorkOrderID | html %])</a>
+                                [% ELSE %]
+                                    [% Assignment.WorkOrderID | html %] — [% Translate("Work Order not found or inaccessible") | html %]
+                                [% END %]
+                                <a href="[% Env("Baselink") %]Action=AdminWorkordersToGroup;AuditWorkOrderID=[% Assignment.WorkOrderID | uri %]">[% Translate("Audit") | html %]</a>
+                            </td>
+                            <td>[% Assignment.WorkOrderState | html %]</td>
+                            <td>[% Assignment.GroupName | html %]</td>
+                            <td>[% Assignment.ClaimedAgentID | html %][% IF Assignment.HasAgentMismatch %] <strong class="Error">[% Translate("Native agent differs") | html %]: [% Assignment.NativeAgentID | html %]</strong>[% END %]</td>
+                            <td>
+                                [% IF Assignment.HasWorkOrder %]
+                                    <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                                        <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                                        <input type="hidden" name="Subaction" value="ChangeGroup"/>
+                                        <input type="hidden" name="WorkOrderID" value="[% Assignment.WorkOrderID | html %]"/>
+                                        <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                                        <select name="GroupID" class="Modernize">
+                                            [% FOREACH Group IN Data.Groups %]
+                                                <option value="[% Group.ID | html %]" [% IF Group.ID == Assignment.GroupID %]selected="selected"[% END %]>[% Group.Name | html %]</option>
+                                            [% END %]
+                                        </select>
+                                        <label><input type="checkbox" name="ReleaseAgent" value="1"/> [% Translate("Release current agent") | html %]</label>
+                                        <button type="submit">[% Translate("Save") | html %]</button>
+                                    </form>
+                                [% ELSE %]
+                                    -
+                                [% END %]
+                            </td>
+                            <td>
+                                [% IF Assignment.ClaimedAgentID && Assignment.HasWorkOrder %]
+                                    <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                                        <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                                        <input type="hidden" name="Subaction" value="Reassign"/>
+                                        <input type="hidden" name="WorkOrderID" value="[% Assignment.WorkOrderID | html %]"/>
+                                        <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                                        <input name="TargetUserID" type="text" class="W50px Validate_Number" placeholder="[% Translate("Agent ID") | html %]"/>
+                                        <button type="submit">[% Translate("Reassign") | html %]</button>
+                                    </form>
+                                    <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                                        <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                                        <input type="hidden" name="Subaction" value="Release"/>
+                                        <input type="hidden" name="WorkOrderID" value="[% Assignment.WorkOrderID | html %]"/>
+                                        <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                                        <button type="submit">[% Translate("Release") | html %]</button>
+                                    </form>
+                                [% ELSE %]
+                                    <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                                        <input type="hidden" name="Action" value="AdminWorkordersToGroup"/>
+                                        <input type="hidden" name="Subaction" value="Remove"/>
+                                        <input type="hidden" name="WorkOrderID" value="[% Assignment.WorkOrderID | html %]"/>
+                                        <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                                        <button type="submit">[% Translate("Remove group assignment") | html %]</button>
+                                    </form>
+                                [% END %]
+                            </td>
+                        </tr>
+                    [% END %]
+                    [% ELSE %]
+                        <tr><td colspan="6">[% Translate("No group assignments found.") | html %]</td></tr>
+                    [% END %]
+                </tbody>
+            </table>
+        </div>
+    </div>
+    [% IF Data.HasAudit %]
+        <div class="WidgetSimple">
+            <div class="Header"><h2>[% Translate("Assignment history") | html %] — [% Data.AuditWorkOrderID | html %]</h2></div>
+            <div class="Content">
+                <table class="DataTable"><thead><tr><th>[% Translate("Time") | html %]</th><th>[% Translate("Event") | html %]</th><th>[% Translate("Group") | html %]</th><th>[% Translate("Agent") | html %]</th><th>[% Translate("Actor ID") | html %]</th></tr></thead><tbody>
+                    [% FOREACH Audit IN Data.AuditRows %]
+                        <tr>
+                            <td>[% Audit.CreateTime | html %]</td><td>[% Audit.Event | html %]</td>
+                            <td>[% Audit.OldGroupID | html %] → [% Audit.NewGroupID | html %]</td>
+                            <td>[% Audit.OldAgentID | html %] → [% Audit.NewAgentID | html %]</td>
+                            <td>[% Audit.ActorID | html %]</td>
+                        </tr>
+                    [% END %]
+                </tbody></table>
+            </div>
+        </div>
+    [% END %]
+</div>
+[% RenderBlockEnd("Overview") %]

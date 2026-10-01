@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otobo_config version="2.0" init="Application">
+    <Setting Name="PreApplicationModule###099-WorkordersToGroupManagedSaveGuard" Required="0" Valid="1">
+        <Description Translatable="1">Keeps managed Work Order assignments on the group-aware server-side save route.</Description>
+        <Navigation>Frontend::Agent</Navigation>
+        <Value><Item ValueType="String">Kernel::Modules::WorkordersToGroupManagedSaveGuard</Item></Value>
+    </Setting>
+    <Setting Name="ITSMWorkOrder::Permission###00-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Group access rules for Work Orders assigned with WorkordersToGroup.</Description>
+        <Navigation>Core::ITSMWorkOrder</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::System::ITSMChange::ITSMWorkOrder::Permission::WorkordersToGroupCheck</Item>
+                <Item Key="Required">1</Item>
+                <Item Key="Granted">1</Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="ITSMWorkOrder::TakePermission###00-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Managed Work Orders must be claimed through the group-aware action.</Description>
+        <Navigation>Core::ITSMWorkOrder</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::System::ITSMChange::ITSMWorkOrder::Permission::WorkordersToGroupCheck</Item>
+                <Item Key="Required">1</Item>
+                <Item Key="Granted">1</Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="ITSMWorkOrder::EventModule###98-WorkordersToGroupCleanup" Required="0" Valid="1">
+        <Description Translatable="1">Removes a group assignment and writes its audit entry when its native Work Order is deleted.</Description>
+        <Navigation>Core::Event::ITSMWorkOrder</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::System::WorkordersToGroup::Event::WorkOrderCleanup</Item>
+                <Item Key="Event">WorkOrderDeletePost</Item>
+                <Item Key="Transaction">0</Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="ITSMWorkOrder::Frontend::MenuModule###036-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Offers group-aware claim and member assignment actions in the Work Order zoom menu.</Description>
+        <Navigation>Frontend::Agent::ITSMWorkOrder::MenuModule</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::ITSMWorkOrder::MenuWorkordersToGroup</Item>
+                <Item Key="Name" Translatable="1">Take or assign this ticket</Item>
+                <Item Key="Description" Translatable="1">Take or assign this group Work Order.</Item>
+                <Item Key="Action">AgentWorkordersToGroupManage</Item>
+                <Item Key="Link">Action=AgentWorkordersToGroupManage;WorkOrderID=[% Data.WorkOrderID | html %]</Item>
+                <Item Key="Target">PopUp</Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="WorkordersToGroup::AssignableGroups" Required="0" Valid="1">
+        <Description Translatable="1">Only these active OTOBO group IDs can receive managed Work Orders. Configure at least one group before assigning Work Orders to groups.</Description>
+        <Navigation>Core::ITSMWorkOrder</Navigation>
+        <Value><Array></Array></Value>
+    </Setting>
+    <Setting Name="Frontend::Module###AdminWorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Administration for group assigned ITSM Work Orders.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="Group"><Array><Item>admin</Item><Item>itsm-change-manager</Item></Array></Item>
+                    <Item Key="GroupRo"><Array></Array></Item>
+                    <Item Key="Description" Translatable="1">Assign ITSM Work Orders to groups and review reassignment history.</Item>
+                    <Item Key="Title" Translatable="1">Work Orders to Group</Item>
+                    <Item Key="NavBarName"></Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::NavigationModule###AdminWorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Admin overview entry for WorkordersToGroup.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Group"><Array><Item>admin</Item><Item>itsm-change-manager</Item></Array></Item>
+                <Item Key="GroupRo"><Array></Array></Item>
+                <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
+                <Item Key="Name" Translatable="1">Work Orders to Group</Item>
+                <Item Key="Block">WorkordersToGroup</Item>
+                <Item Key="Description" Translatable="1">Manage Work Order group assignments.</Item>
+                <Item Key="IconBig">fa-users</Item>
+                <Item Key="IconSmall"></Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::AdminModuleGroups###020-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Admin overview group for WorkordersToGroup.</Description>
+        <Navigation>Frontend::Base::NavBarModule</Navigation>
+        <Value><Hash><Item Key="WorkordersToGroup"><Hash><Item Key="Title" Translatable="1">Work Orders to Group</Item><Item Key="Order">4550</Item></Hash></Item></Hash></Value>
+    </Setting>
+    <Setting Name="Frontend::Module###AgentWorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Team view for group assigned Work Orders.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="Group"><Array></Array></Item>
+                    <Item Key="GroupRo"><Array></Array></Item>
+                    <Item Key="Description" Translatable="1">View and claim Work Orders assigned to your groups.</Item>
+                    <Item Key="Title" Translatable="1">Team Work Orders</Item>
+                    <Item Key="NavBarName">ITSM Change</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Module###AgentWorkordersToGroupTake" Required="0" Valid="1">
+        <Description Translatable="1">CSRF protected endpoint to claim a group assigned Work Order.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="Group"><Array></Array></Item>
+                    <Item Key="GroupRo"><Array></Array></Item>
+                    <Item Key="Description" Translatable="1">Claim a group assigned Work Order.</Item>
+                    <Item Key="Title" Translatable="1">Claim Work Order</Item>
+                    <Item Key="NavBarName">ITSM Change</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Module###AgentWorkordersToGroupManage" Required="0" Valid="1">
+        <Description Translatable="1">Popup to claim a group Work Order or assign it to a group member.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="Group"><Array></Array></Item>
+                    <Item Key="GroupRo"><Array></Array></Item>
+                    <Item Key="Description" Translatable="1">Take or assign a group Work Order.</Item>
+                    <Item Key="Title" Translatable="1">Group Work Order</Item>
+                    <Item Key="NavBarName">ITSM Change</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Module###AgentWorkordersToGroupTarget" Required="0" Valid="1">
+        <Description Translatable="1">Native Work Order agent/group assignment endpoint.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="Group"><Array></Array></Item>
+                    <Item Key="GroupRo"><Array><Item>itsm-change</Item></Array></Item>
+                    <Item Key="Description" Translatable="1">Set a Work Order agent or group.</Item>
+                    <Item Key="Title" Translatable="1">Work Order assignment</Item>
+                    <Item Key="NavBarName">ITSM Change</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Loader::Module::AgentITSMWorkOrderAgent###980-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Replace the native Work Order user search with an agent/group dropdown.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="CSS"><Array></Array></Item>
+                <Item Key="JavaScript"><Array><Item>Core.Agent.WorkordersToGroup.js</Item></Array></Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Loader::Module::AgentWorkordersToGroupManage###980-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Styles for the group Work Order popup.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="CSS"><Array><Item>Core.Agent.WorkordersToGroup.css</Item></Array></Item>
+                <Item Key="JavaScript"><Array></Array></Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Loader::Agent::CommonCSS###990-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Toolbar and team overview styles for WorkordersToGroup.</Description>
+        <Navigation>Frontend::Base::Loader</Navigation>
+        <Value>
+            <Array>
+                <Item>Core.Agent.WorkordersToGroup.css</Item>
+            </Array>
+        </Value>
+    </Setting>
+    <Setting Name="Loader::Module::AgentWorkordersToGroup###980-WorkordersToGroup" Required="0" Valid="1">
+        <Description Translatable="1">Column sorting and compact filter toggles for the group Work Order overview.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="CSS"><Array></Array></Item>
+                <Item Key="JavaScript"><Array><Item>Core.Agent.WorkordersToGroupList.js</Item></Array></Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::ToolBarModule###105-WorkordersToGroup::GroupWorkOrders" Required="0" Valid="1">
+        <Description Translatable="1">Count of group Work Orders the agent can claim.</Description>
+        <Navigation>Frontend::Agent::ToolBar</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::ToolBar::GroupWorkOrders</Item>
+                <Item Key="CssClass">WorkordersToGroup</Item>
+                <Item Key="Icon">fa fa-users</Item>
+                <Item Key="Priority">1000650</Item>
+                <Item Key="JavaScript">Core.Agent.WorkordersToGroupToolbar.js</Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AgentWorkordersToGroup###010-WorkordersToGroup" Required="0" Valid="0">
+        <Description Translatable="1">The WorkordersToGroup toolbar icon is the agent entry point.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation"><Hash></Hash></DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group"><Array></Array></Item>
+                        <Item Key="GroupRo"><Array></Array></Item>
+                        <Item Key="Description" Translatable="1">Work Orders assigned to your groups.</Item>
+                        <Item Key="Name" Translatable="1">Team Work Orders</Item>
+                        <Item Key="Link">Action=AgentWorkordersToGroup</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">ITSM Change</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="Prio">3490</Item>
+                    </Hash>
+                </Item>
+            </Array>
+        </Value>
+    </Setting>
+</otobo_config>

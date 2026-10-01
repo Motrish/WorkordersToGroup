@@ -1,0 +1,217 @@
+#ToolBar i.fa.fa-users.HasAvailableWorkOrders {
+    --colHighlight: red;
+    animation: rotBlinken 1s infinite;
+}
+
+@keyframes rotBlinken {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #ToolBar i.fa.fa-users.HasAvailableWorkOrders {
+        animation: none;
+        color: red;
+    }
+}
+
+.WorkordersToGroupInstruction {
+    margin-top: 0.2rem;
+    color: var(--colTextLight);
+    font-size: 0.9em;
+}
+
+.WorkordersToGroupTableTools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.WorkordersToGroupTableStatus {
+    color: var(--colTextLight);
+}
+
+.WorkordersToGroupState {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.WorkordersToGroupStateDot {
+    display: inline-block;
+    flex: 0 0 0.55rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background-color: var(--colBGDark);
+}
+
+.WorkordersToGroupStateDot.grayled { background-color: #cdcdcd; }
+.WorkordersToGroupStateDot.greenled { background-color: #8bef4d; }
+.WorkordersToGroupStateDot.yellowled { background-color: #ffdd50; }
+.WorkordersToGroupStateDot.redled { background-color: #ff505e; }
+.WorkordersToGroupStateDot.purpleled { background-color: #b23aee; }
+.WorkordersToGroupStateDot.orangeled { background-color: #ff8c00; }
+.WorkordersToGroupStateDot.cyanled { background-color: #79cdcd; }
+.WorkordersToGroupStateDot.whiteled { background-color: #ffffff; border: 1px solid var(--colTextLight); }
+.WorkordersToGroupStateDot.blackled { background-color: #000000; }
+
+.WorkordersToGroupTableWrapper {
+    max-width: 100%;
+    overflow: visible;
+}
+
+.DataTable.WorkordersToGroupList {
+    width: max-content;
+    max-width: 100%;
+    table-layout: auto;
+}
+
+.DataTable.WorkordersToGroupList th,
+.DataTable.WorkordersToGroupList td {
+    padding-right: 0.4rem;
+    padding-left: 0.4rem;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.WorkordersToGroupList thead th {
+    position: relative;
+    vertical-align: middle;
+}
+
+.WorkordersToGroupList thead th.WorkordersToGroupFilterOpen {
+    z-index: 20;
+}
+
+.WorkordersToGroupList .WorkordersToGroupColumnHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.WorkordersToGroupList .WorkordersToGroupSort {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 0.25rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: normal;
+    text-align: left;
+}
+
+.WorkordersToGroupList button.WorkordersToGroupSort {
+    border: none;
+    background-color: #0000;
+}
+
+.WorkordersToGroupList .WorkordersToGroupSort:hover {
+    text-decoration: underline;
+}
+
+.WorkordersToGroupList .WorkordersToGroupSort:focus-visible {
+    outline: 2px solid var(--colHighlight);
+    outline-offset: 2px;
+}
+
+.WorkordersToGroupList .WorkordersToGroupSortIndicator {
+    flex: 0 0 auto;
+    min-width: 0.8em;
+    color: var(--colTextLight);
+}
+
+.WorkordersToGroupList .WorkordersToGroupFilterToggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--colTextLight);
+    cursor: pointer;
+}
+
+.WorkordersToGroupList button.WorkordersToGroupFilterToggle {
+    border: none;
+    background-color: #0000;
+}
+
+.WorkordersToGroupList .WorkordersToGroupFilterToggle:hover {
+    color: var(--colHighlight);
+}
+
+.WorkordersToGroupList .WorkordersToGroupFilterToggle:focus-visible {
+    outline: 2px solid var(--colHighlight);
+    outline-offset: 1px;
+}
+
+.WorkordersToGroupList thead input[data-filter-column] {
+    position: static;
+    display: inline-block;
+    flex: 0 1 8rem;
+    box-sizing: border-box;
+    width: 8rem;
+    min-width: 0;
+    max-width: calc(100vw - 2rem);
+    margin-left: 0.25rem;
+    padding: 0.25rem 0.4rem;
+    border: none;
+    background-color: #ffffff;
+    color: var(--colText);
+    font: inherit;
+    font-size: 0.9em;
+}
+
+.WorkordersToGroupList thead input[data-filter-column][hidden] {
+    display: none !important;
+}
+
+.WorkordersToGroupList thead input[data-filter-column]:focus {
+    outline: 1px solid var(--colHighlight);
+}
+
+.WorkordersToGroupClearFilters {
+    flex: 0 0 auto;
+}
+
+.WorkordersToGroupPillButton {
+    min-height: 10px;
+    padding: 2px 6px 3px;
+    line-height: 12px;
+    vertical-align: middle;
+    color: white;
+    font-size: 11px;
+    border: 1px solid var(--colMainLight);
+    background-color: var(--colMainLight);
+    border-bottom: none;
+    cursor: pointer;
+    position: relative;
+    border-radius: 20px;
+}
+
+.WorkordersToGroupManageForm {
+    margin: 1rem 0;
+}
+
+.WorkordersToGroupManageForm label,
+.WorkordersToGroupManageForm select {
+    display: block;
+    margin: 0.35rem 0;
+}

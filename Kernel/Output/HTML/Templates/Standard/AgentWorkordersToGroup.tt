@@ -1,0 +1,87 @@
+[% RenderBlockStart("Overview") %]
+<div class="MainBox ARIARoleMain">
+    <h1>[% Translate("My Team Work Orders") | html %]</h1>
+    <p>[% Translate("Orders are listed for groups where you have effective read permission. You may claim an unassigned order when you have effective write permission for its group.") | html %]</p>
+    [% IF Data.ClaimError %]
+        <div class="Message Error"><p>[% Translate("This Work Order could not be claimed or is no longer available.") | html %]</p></div>
+    [% END %]
+    <div class="WidgetSimple">
+        <div class="Header"><h2>[% Translate("Filter") | html %]</h2></div>
+        <div class="Content">
+            <a class="CallForAction [% IF Data.Filter == 'all' %]Primary[% END %]" href="[% Env("Baselink") %]Action=AgentWorkordersToGroup;Filter=all"><span>[% Translate("All team orders") | html %]</span></a>
+            <a class="CallForAction [% IF Data.Filter == 'mine' %]Primary[% END %]" href="[% Env("Baselink") %]Action=AgentWorkordersToGroup;Filter=mine"><span>[% Translate("Assigned to me") | html %]</span></a>
+            <a class="CallForAction [% IF Data.Filter == 'unassigned' %]Primary[% END %]" href="[% Env("Baselink") %]Action=AgentWorkordersToGroup;Filter=unassigned"><span>[% Translate("Unassigned") | html %]</span></a>
+        </div>
+    </div>
+    <div class="WidgetSimple">
+        <div class="Content">
+            <div class="WorkordersToGroupTableTools">
+                <span class="WorkordersToGroupTableStatus" role="status" aria-live="polite"
+                    data-showing="[% Translate("Showing") | html %]"
+                    data-of="[% Translate("of") | html %]"
+                    data-on-page="[% Translate("on this page") | html %]">
+                    [% Translate("Showing") | html %] [% Data.WorkOrderCount | html %] [% Translate("of") | html %] [% Data.WorkOrderCount | html %] [% Translate("on this page") | html %]
+                </span>
+                <button type="button" class="WorkordersToGroupClearFilters WorkordersToGroupPillButton">[% Translate("Clear filters") | html %]</button>
+            </div>
+            <div class="WorkordersToGroupTableWrapper">
+            <table class="DataTable WorkordersToGroupList">
+                <thead>
+                    <tr>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="0">[% Translate("Team") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="0" aria-controls="WorkordersToGroupFilter0" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Team") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter0" type="search" data-filter-column="0" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Team") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="1">[% Translate("Change") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="1" aria-controls="WorkordersToGroupFilter1" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Change") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter1" type="search" data-filter-column="1" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Change") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="2">[% Translate("Work Order") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="2" aria-controls="WorkordersToGroupFilter2" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Work Order") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter2" type="search" data-filter-column="2" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Work Order") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="3">[% Translate("Instruction") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="3" aria-controls="WorkordersToGroupFilter3" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Instruction") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter3" type="search" data-filter-column="3" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Instruction") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="4">[% Translate("Planned Start") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="4" aria-controls="WorkordersToGroupFilter4" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Planned Start") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter4" type="search" data-filter-column="4" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Planned Start") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="5">[% Translate("Planned End") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="5" aria-controls="WorkordersToGroupFilter5" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Planned End") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter5" type="search" data-filter-column="5" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Planned End") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="6">[% Translate("State") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="6" aria-controls="WorkordersToGroupFilter6" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("State") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter6" type="search" data-filter-column="6" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("State") | html %]" hidden /></div></th>
+                        <th aria-sort="none"><div class="WorkordersToGroupColumnHeader"><button type="button" class="WorkordersToGroupSort" data-sort-column="7">[% Translate("Agent") | html %]<span aria-hidden="true" class="WorkordersToGroupSortIndicator">↕</span></button><button type="button" class="WorkordersToGroupFilterToggle" data-filter-toggle="7" aria-controls="WorkordersToGroupFilter7" aria-expanded="false" aria-label="[% Translate("Filter") | html %] [% Translate("Agent") | html %]"><i class="fa fa-search" aria-hidden="true"></i></button><input id="WorkordersToGroupFilter7" type="search" data-filter-column="7" placeholder="[% Translate("Filter") | html %]" aria-label="[% Translate("Filter") | html %] [% Translate("Agent") | html %]" hidden /></div></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    [% IF Data.HasWorkOrders %]
+                    [% FOREACH WorkOrder IN Data.WorkOrders %]
+                        <tr data-workorder-row="1">
+                            <td>[% WorkOrder.GroupName | html %]</td>
+                            <td>
+                                [% IF WorkOrder.HasChange %]
+                                    [% IF WorkOrder.ChangeNumber || WorkOrder.ChangeTitle %]<a href="[% Env("Baselink") %]Action=AgentITSMChangeZoom;ChangeID=[% WorkOrder.ChangeID | uri %]">[% WorkOrder.ChangeNumber | html %] - [% WorkOrder.ChangeTitle | html %]</a>[% ELSE %]-[% END %]
+                                [% END %]
+                            </td>
+                            <td><a href="[% Env("Baselink") %]Action=AgentITSMWorkOrderZoom;WorkOrderID=[% WorkOrder.WorkOrderID | uri %]">[% IF WorkOrder.ChangeNumber %][% WorkOrder.ChangeNumber | html %]-[% WorkOrder.WorkOrderNumber | html %][% ELSE %][% WorkOrder.WorkOrderNumber | html %][% END %] - [% WorkOrder.WorkOrderTitle | html %]</a></td>
+                            <td><div class="WorkordersToGroupInstruction">[% WorkOrder.InstructionExcerpt | html %]</div></td>
+                            <td data-sort-value="[% WorkOrder.PlannedStartTime | html %]">[% WorkOrder.PlannedStartTime | html %]</td>
+                            <td data-sort-value="[% WorkOrder.PlannedEndTime | html %]">[% WorkOrder.PlannedEndTime | html %]</td>
+                            <td><span class="WorkordersToGroupState"><span class="WorkordersToGroupStateDot [% WorkOrder.WorkOrderStateSignal | html %]" aria-hidden="true"></span><span>[% Translate(WorkOrder.WorkOrderState) | html %]</span></span></td>
+                            <td>[% WorkOrder.WorkOrderAgent | html %]</td>
+                            <td>
+                                [% IF WorkOrder.CanTake %]
+                                    <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits">
+                                        <input type="hidden" name="Action" value="AgentWorkordersToGroupTake"/>
+                                        <input type="hidden" name="WorkOrderID" value="[% WorkOrder.WorkOrderID | html %]"/>
+                                        <input type="hidden" name="ChallengeToken" value="[% Env("UserChallengeToken") | html %]"/>
+                                        <button type="submit" class="WorkordersToGroupPillButton">[% Translate("Claim") | html %]</button>
+                                    </form>
+                                [% END %]
+                            </td>
+                        </tr>
+                    [% END %]
+                    [% ELSE %]
+                        <tr><td colspan="9">[% Translate("No assigned Work Orders are visible for this filter.") | html %]</td></tr>
+                    [% END %]
+                </tbody>
+            </table>
+            </div>
+            <div class="Pagination">
+                [% IF Data.HasPreviousPage %]
+                    <a class="CallForAction" href="[% Env("Baselink") %]Action=AgentWorkordersToGroup;Filter=[% Data.Filter | uri %];CursorDirection=previous;CursorChangeTime=[% Data.PreviousCursorChangeTime | uri %];CursorID=[% Data.PreviousCursorID | uri %]"><span>[% Translate("Previous") | html %]</span></a>
+                [% END %]
+                [% IF Data.HasNextPage %]
+                    <a class="CallForAction" href="[% Env("Baselink") %]Action=AgentWorkordersToGroup;Filter=[% Data.Filter | uri %];CursorDirection=next;CursorChangeTime=[% Data.NextCursorChangeTime | uri %];CursorID=[% Data.NextCursorID | uri %]"><span>[% Translate("Next") | html %]</span></a>
+                [% END %]
+            </div>
+        </div>
+    </div>
+</div>
+[% RenderBlockEnd("Overview") %]

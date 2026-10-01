@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otobo_package version="1.0">
+    <Name>WorkordersToGroup</Name>
+    <Version>1.0.0</Version>
+    <Framework Minimum="11.0.13">11.0.x</Framework>
+    <PackageRequired Version="11.0.3">ITSMChangeManagement</PackageRequired>
+    <Vendor>Michael Nehmer | Motrish</Vendor>
+    <URL>https://github.com/Motrish/WorkordersToGroup</URL>
+    <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
+    <Description Lang="en">Assign ITSM Work Orders to agents or OTOBO groups, claim group orders from the agent toolbar, and manage team actions in the Work Order zoom view.</Description>
+    <Description Lang="de">Weist ITSM-Arbeitsaufträge Agenten oder OTOBO-Gruppen zu und ermöglicht Übernahme und Zuweisung in Kopfleiste und Arbeitsauftragsansicht.</Description>
+    <ChangeLog Version="1.0.0" Date="2026-10-01">First stable release of group-aware ITSM Work Order assignment, claiming, administration, audit, and migration support. Includes translated states with configured status colors and displays the change number, Work Order number, and title without exposing the internal database ID.</ChangeLog>
+    <IntroInstall Type="pre" Lang="de" Title="WorkordersToGroup"><![CDATA[
+Erfordert OTOBO 11.0.13 (11.0.x) und ITSMChangeManagement 11.0.3. Vor der ersten Gruppenzuweisung muss unter SysConfig > Core::ITSMWorkOrder die Einstellung WorkordersToGroup::AssignableGroups die IDs der freigegebenen Gruppen enthalten. Im nativen Zuweisungsdialog werden aktive Agenten und freigegebene Gruppen angeboten. Berechtigte Agenten sehen über das Kopfleisten-Symbol die Zahl übernehmbarer Gruppenaufträge und öffnen damit die Teamübersicht. Vor dem Aktivieren sind Formular, Rechte, Toolbar und bestehende Zuordnungen in einer Testinstanz zu prüfen.
+    ]]></IntroInstall>
+    <IntroInstall Type="pre" Lang="en" Title="WorkordersToGroup"><![CDATA[
+Requires OTOBO 11.0.13 (11.0.x) and ITSMChangeManagement 11.0.3. Before the first group assignment, configure the allowed group IDs in SysConfig > Core::ITSMWorkOrder > WorkordersToGroup::AssignableGroups. The native assignment popup offers active agents and approved groups in one dropdown. Eligible agents see the number of claimable group orders in the agent toolbar and can open the team overview from that icon. Test the form, permissions, toolbar, and existing assignments in a target instance before enabling.
+    ]]></IntroInstall>
+    <Filelist>
+        <File Permission="644" Location="Kernel/Config/Files/XML/WorkordersToGroup.xml" />
+        <File Permission="644" Location="Kernel/Language/de_WorkordersToGroup.pm" />
+        <File Permission="644" Location="Kernel/Language/en_WorkordersToGroup.pm" />
+        <File Permission="644" Location="Kernel/Modules/AdminWorkordersToGroup.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentWorkordersToGroup.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentWorkordersToGroupManage.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentWorkordersToGroupTake.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentWorkordersToGroupTarget.pm" />
+        <File Permission="644" Location="Kernel/Modules/WorkordersToGroupManagedSaveGuard.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/ToolBar/GroupWorkOrders.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/ITSMWorkOrder/MenuWorkordersToGroup.pm" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminWorkordersToGroup.tt" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AgentWorkordersToGroup.tt" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AgentWorkordersToGroupManage.tt" />
+        <File Permission="644" Location="Kernel/System/WorkordersToGroup/Assignment.pm" />
+        <File Permission="644" Location="Kernel/System/WorkordersToGroup/AtomicOperation.pm" />
+        <File Permission="644" Location="Kernel/System/WorkordersToGroup/Migration.pm" />
+        <File Permission="644" Location="Kernel/System/WorkordersToGroup/Event/WorkOrderCleanup.pm" />
+        <File Permission="644" Location="Kernel/System/ITSMChange/ITSMWorkOrder/Permission/WorkordersToGroupCheck.pm" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.WorkordersToGroup.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.WorkordersToGroupToolbar.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.WorkordersToGroupList.js" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.Agent.WorkordersToGroup.css" />
+    </Filelist>
+    <DatabaseInstall Type="post">
+        <TableCreate Name="wotg_assignment">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
+            <Column Name="workorder_id" Required="true" Type="BIGINT" />
+            <Column Name="change_id" Required="false" Type="BIGINT" />
+            <Column Name="group_id" Required="true" Type="INTEGER" />
+            <Column Name="claimed_agent_id" Required="false" Type="INTEGER" />
+            <Column Name="source_package" Required="false" Size="100" Type="VARCHAR" />
+            <Column Name="source_key" Required="false" Size="250" Type="VARCHAR" />
+            <Column Name="version" Required="true" Type="INTEGER" />
+            <Column Name="create_time" Required="true" Type="DATE" />
+            <Column Name="create_by" Required="true" Type="INTEGER" />
+            <Column Name="change_time" Required="true" Type="DATE" />
+            <Column Name="change_by" Required="true" Type="INTEGER" />
+            <Unique Name="wotg_assignment_workorder">
+                <UniqueColumn Name="workorder_id" />
+            </Unique>
+            <Index Name="wotg_assignment_unassigned">
+                <IndexColumn Name="group_id" />
+                <IndexColumn Name="claimed_agent_id" />
+                <IndexColumn Name="workorder_id" />
+            </Index>
+            <Index Name="wotg_assignment_agent">
+                <IndexColumn Name="claimed_agent_id" />
+            </Index>
+        </TableCreate>
+        <TableCreate Name="wotg_audit">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
+            <Column Name="workorder_id" Required="true" Type="BIGINT" />
+            <Column Name="assignment_id" Required="true" Type="BIGINT" />
+            <Column Name="event_type" Required="true" Size="40" Type="VARCHAR" />
+            <Column Name="old_group_id" Required="false" Type="INTEGER" />
+            <Column Name="new_group_id" Required="false" Type="INTEGER" />
+            <Column Name="old_agent_id" Required="false" Type="INTEGER" />
+            <Column Name="new_agent_id" Required="false" Type="INTEGER" />
+            <Column Name="actor_id" Required="true" Type="INTEGER" />
+            <Column Name="details" Required="false" Size="4000" Type="VARCHAR" />
+            <Column Name="create_time" Required="true" Type="DATE" />
+            <Column Name="create_by" Required="true" Type="INTEGER" />
+            <Index Name="wotg_audit_workorder">
+                <IndexColumn Name="workorder_id" />
+            </Index>
+        </TableCreate>
+    </DatabaseInstall>
+    <DatabaseUpgrade Type="post" Version="0.2.5">
+        <TableAlter Name="wotg_assignment">
+            <IndexCreate Name="wotg_assignment_unassigned">
+                <IndexColumn Name="group_id" />
+                <IndexColumn Name="claimed_agent_id" />
+                <IndexColumn Name="workorder_id" />
+            </IndexCreate>
+        </TableAlter>
+    </DatabaseUpgrade>
+    <CodeUpgrade Type="post" Version="0.2.13"><![CDATA[
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+        my $DBType = $DBObject->{'DB::Type'} || '';
+        my $Table = 'wotg_assignment';
+        my $Index = 'wotg_assignment_unassigned';
+        my $SQL = $DBType eq 'mysql'
+            ? 'SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?'
+            : $DBType eq 'postgresql'
+            ? 'SELECT 1 FROM pg_indexes WHERE schemaname = current_schema() AND tablename = ? AND indexname = ?'
+            : $DBType eq 'oracle'
+            ? 'SELECT 1 FROM user_indexes WHERE table_name = UPPER(?) AND index_name = UPPER(?)'
+            : $DBType eq 'mssql'
+            ? 'SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(?) AND name = ?'
+            : '';
+        die "Unsupported database backend '$DBType' for WorkordersToGroup index repair.\n" if !$SQL;
+        die "Could not inspect WorkordersToGroup assignment indexes.\n"
+            if !$DBObject->Prepare( SQL => $SQL, Bind => [ \$Table, \$Index ] );
+        my @Existing = $DBObject->FetchrowArray();
+        if ( !@Existing ) {
+            my @IndexSQL = $DBObject->{Backend}->IndexCreate(
+                TableName => $Table,
+                Name      => $Index,
+                Data      => [
+                    { Name => 'group_id' },
+                    { Name => 'claimed_agent_id' },
+                    { Name => 'workorder_id' },
+                ],
+            );
+            die "Could not create the WorkordersToGroup assignment index.\n" if !@IndexSQL;
+            for my $Statement (@IndexSQL) {
+                die "Could not create the WorkordersToGroup assignment index.\n"
+                    if !$DBObject->Do( SQL => $Statement );
+            }
+        }
+        my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+        my $LegacyCSS = "$Home/var/httpd/htdocs/css/Core.Agent.WorkordersToGroup.css";
+        if ( -e $LegacyCSS ) {
+            die "Could not remove the obsolete WorkordersToGroup stylesheet.\n"
+                if !$Kernel::OM->Get('Kernel::System::Main')->FileDelete( Location => $LegacyCSS );
+        }
+    ]]></CodeUpgrade>
+</otobo_package>

@@ -1,0 +1,39 @@
+[% RenderBlockStart("Manage") %]
+<div class="MainBox ARIARoleMain WorkordersToGroupManage">
+    <h1>[% Translate("Take or assign this ticket") | html %]</h1>
+    <p>[% Data.ChangeNumber | html %] - [% Data.ChangeTitle | html %]<br />
+        [% Data.WorkOrderNumber | html %]: [% Data.WorkOrderTitle | html %]<br />
+        [% Translate("Group") | html %]: [% Data.GroupName | html %]</p>
+
+    [% IF Data.CanClaim %]
+        <form action="[% Env("CGIHandle") %]" method="post" class="Inline PreventMultipleSubmits WorkordersToGroupManageForm">
+            <input type="hidden" name="Action" value="AgentWorkordersToGroupTake" />
+            <input type="hidden" name="WorkOrderID" value="[% Data.WorkOrderID | html %]" />
+            <input type="hidden" name="ReturnView" value="workorder" />
+            <input type="hidden" name="ChallengeToken" value="[% Data.ChallengeToken | html %]" />
+            <button type="submit" class="CallForAction Primary"><span>[% Translate("Take Ticket") | html %]</span></button>
+        </form>
+    [% END %]
+
+    [% IF Data.CanAssign %]
+        <form action="[% Env("CGIHandle") %]" method="post" class="PreventMultipleSubmits WorkordersToGroupManageForm">
+            <input type="hidden" name="Action" value="AgentWorkordersToGroupManage" />
+            <input type="hidden" name="Subaction" value="Assign" />
+            <input type="hidden" name="WorkOrderID" value="[% Data.WorkOrderID | html %]" />
+            <input type="hidden" name="ChallengeToken" value="[% Data.ChallengeToken | html %]" />
+            <label for="WorkordersToGroupTargetUser">[% Translate("Assign to a group member") | html %]</label>
+            <select id="WorkordersToGroupTargetUser" name="TargetUserID" required="required">
+                <option value="">[% Translate("Select") | html %]</option>
+                [% FOREACH Member IN Data.Members %]
+                    <option value="[% Member.ID | html %]">[% Member.Name | html %]</option>
+                [% END %]
+            </select>
+            <button type="submit" class="CallForAction"><span>[% Translate("Assign") | html %]</span></button>
+        </form>
+    [% END %]
+
+    [% UNLESS Data.CanClaim || Data.CanAssign %]
+        <p>[% Translate("No group action is available for this ticket.") | html %]</p>
+    [% END %]
+</div>
+[% RenderBlockEnd("Manage") %]
